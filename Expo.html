@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Gestión de Espacio en Bases de Datos </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #eef2f7 0%, #d9e0e8 100%);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      padding: 2rem 1.5rem;
+      color: #1a2c3e;
+    }
+
+    /* Contenedor principal estilo "dashboard" */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Encabezado con toque creativo */
+    .hero {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #0f2b3d, #1b4f6e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+      text-shadow: 2px 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #2c5368;
+      background: rgba(255,255,240,0.7);
+      display: inline-block;
+      padding: 0.5rem 1.8rem;
+      border-radius: 60px;
+      backdrop-filter: blur(4px);
+      margin-top: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* cuadrícula responsiva */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* tarjetas con estilo glassmorphism + sombras */
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 2rem;
+      padding: 1.8rem 1.8rem 2rem 1.8rem;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 28px 38px -16px rgba(0, 0, 0, 0.25);
+    }
+
+    .card h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      border-left: 5px solid #2c7da0;
+      padding-left: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .card h2 i {
+      font-size: 1.8rem;
+    }
+
+    .badge {
+      background: #1f5e7e;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      letter-spacing: 0.3px;
+    }
+
+    .highlight {
+      background: #fef9e3;
+      border-left: 4px solid #f4b942;
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      font-weight: 500;
+    }
+
+    .soft-hard {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1.2rem 0;
+    }
+
+    .soft, .hard {
+      flex: 1;
+      background: #f1f5f9;
+      border-radius: 1.2rem;
+      padding: 1rem;
+    }
+
+    .soft h3, .hard h3 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .soft { border-top: 4px solid #3b82f6; }
+    .hard { border-top: 4px solid #dc2626; }
+
+    .users-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .user-item {
+      background: #eef2ff;
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .user-item strong {
+      min-width: 130px;
+      color: #0f3b4f;
+    }
+
+    .engine-compare {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.8rem;
+    }
+
+    .engine {
+      background: #ffffffc9;
+      border-radius: 1rem;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .engine span {
+      font-weight: 800;
+      color: #1f5e7e;
+    }
+
+    hr {
+      margin: 1rem 0;
+      border: 0;
+      height: 1px;
+      background: linear-gradient(to right, #ccc, transparent);
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 2rem;
+      background: rgba(0,0,0,0.03);
+      border-radius: 2rem;
+      padding: 1.2rem;
+      font-size: 0.9rem;
+      color: #2c3e50;
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(255,255,240,0.8);
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 1rem;
+      }
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      .card h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* detalles visuales */
+    .quote {
+      font-style: italic;
+      background: #e9f0f5;
+      border-radius: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      color: #1e4a6b;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <h1> Arquitectura de Espacio<br>en Bases de Datos</h1>
+    <p> Asignación de cuotas · Límites · Tablespaces · Motores</p>
+  </div>
+
+  <div class="grid">
+    <!-- Tarjeta 1: ¿Por qué limitamos el espacio? -->
+    <div class="card">
+      <h2> 1. ¿Por qué limitamos?</h2>
+      <div class="badge"> supervivencia del sistema</div>
+      <p><strong> El problema:</strong> Si un usuario guarda archivos o "datos basura" sin control, llena el disco → la base de datos se <strong>apaga para todos</strong>.</p>
+      <div class="highlight">
+         <strong>La solución:</strong> <span style="font-weight:700;">Asignación de Cuotas</span> → un "presupuesto" de megabytes por persona.
+      </div>
+      <p> <strong>Concepto clave:</strong> No es por ser "malos", es por <strong>supervivencia del sistema</strong>. El equilibrio permite que toda la organización funcione sin caídas.</p>
+      <div class="quote">
+         "Un usuario descontrolado puede hundir un servidor compartido. Las cuotas garantizan estabilidad colectiva."
+      </div>
+    </div>
+
+    <!-- Tarjeta 2: Límites Blandos vs Duros (visual atractivo) -->
+    <div class="card">
+      <h2> 2. Límites Blandos vs Duros</h2>
+      <div class="soft-hard">
+        <div class="soft">
+          <h3> Límite Blando <span style="font-weight:400;">(Soft Limit)</span></h3>
+          <p> Como la <strong>reserva de gasolina</strong> del coche: el sistema te avisa: <em>“Oye, ya casi te acabas tus 10GB, borra algo”</em>.<br> Te deja seguir, pero ya estás avisado.</p>
+        </div>
+        <div class="hard">
+          <h3> Límite Duro <span style="font-weight:400;">(Hard Limit)</span></h3>
+          <p> Es una <strong>pared de concreto</strong>. Si llegas al tope, la BD te dice <strong>“Error”</strong> y no te deja guardar ni una letra más hasta liberar espacio.</p>
+        </div>
+      </div>
+      <p style="margin-top: 0.5rem; font-size:0.9rem;"> En producción se combinan ambos: avisos tempranos + barrera final para proteger la estabilidad.</p>
+    </div>
+
+    <!-- Tarjeta 3: Tablespace (El contenedor) -->
+    <div class="card">
+      <h2> 3. El Tablespace</h2>
+      <div class="badge"> contenedor físico</div>
+      <p><strong>Para que la gente entienda:</strong> Un <strong>Tablespace</strong> es como un <strong>archivero físico</strong> </p>
+      <div class="highlight">
+         La base de datos <strong>no guarda todo en una sola bolsa</strong>. Divide el disco en "archiveros". A un usuario le decimos: <em>“Tú solo puedes usar el cajón número 3, y ese cajón solo mide 1 metro de profundidad”</em>.
+      </div>
+      <p> Los DBA asignan tablespaces específicos para controlar crecimiento, rendimiento y backup granular.</p>
+    </div>
+  </div>
+
+  <!-- segunda fila de 2 columnas (¿A quién le damos espacio? + Diferencias entre Motores) -->
+  <div class="grid">
+    <!-- Tarjeta 4: ¿A quién le damos espacio? (VIP / App / Prueba) -->
+    <div class="card">
+      <h2> 4. ¿A quién le damos espacio?</h2>
+      <div class="users-list">
+        <div class="user-item"><strong> Usuarios VIP:</strong> Administradores → sin límite (supervisión confiable).</div>
+        <div class="user-item"><strong> Usuarios de Aplicación:</strong> Apps controladas → cuotas ajustadas y monitorizadas.</div>
+        <div class="user-item"><strong> Usuarios de Prueba:</strong> Cuotas muy pequeñas → evitan desastres mientras aprenden.</div>
+      </div>
+      <hr>
+      <p> <strong>Estrategia recomendada:</strong> segmentar roles y asignar cuotas proporcionales al riesgo/necesidad. Los usuarios de prueba con <strong>hard limit bajo</strong> evitan accidentes.</p>
+    </div>
+
+    <!-- Tarjeta 5: Diferencias entre Motores (Oracle, MySQL, PostgreSQL) -->
+    <div class="card">
+      <h2> 5. Diferencias entre Motores</h2>
+      <div class="engine-compare">
+        <div class="engine"><span> Oracle:</span> El más estricto. Si no le das cuota, el usuario <strong>no puede ni crear una tabla</strong>. Control granular por tablespace y usuario.</div>
+        <div class="engine"><span> MySQL / MariaDB:</span> Más relajados. Normalmente dejan usar todo el disco a menos que el ingeniero configure límites externos (como quotas del sistema de archivos o plugins).</div>
+        <div class="engine"><span> PostgreSQL:</span> Se enfoca más en permisos de carpetas y límites a nivel de tablespace, pero <strong>no tiene cuotas de usuario directas</strong> nativas; se gestiona con volúmenes del SO o esquemas separados.</div>
+      </div>
+      <div class="quote">
+         Consejo: En entornos multi-tenant, combina límites del motor + monitoreo proactivo.
+      </div>
+    </div>
+  </div>
+
+  <!-- bloque extra: resumen visual creativo con analogías (para cerrar con fuerza) -->
+  <div class="grid">
+    <div class="card" style="grid-column: span 1;">
+      <h2> Analogía rápida</h2>
+      <p><strong> Restaurante comunitario:</strong> Cada comensal (usuario) tiene un plato (cuota). Si alguien llena su plato con comida de sobra y no come, bloquea la mesa. Los límites duros evitan que alguien acapare todo el buffet. ¡El sistema se mantiene vivo para todos!</p>
+      <div style="margin-top: 1rem; background:#d9e3ea; border-radius: 20px; padding: 0.5rem 1rem; font-weight:500;"> Conclusión: Las cuotas no son un castigo, sino un <strong>mecanismo de convivencia</strong> en bases de datos compartidas.</div>
+    </div>
+    <div class="card" style="grid-column: span 1;">
+      <h2> Buenas prácticas</h2>
+      <ul style="margin-left: 1.4rem; line-height: 1.5;">
+        <li> Definir <strong>soft limit</strong> al 85% y <strong>hard limit</strong> al 100% de la cuota.</li>
+        <li> Auditar usuarios inactivos que acumulan basura.</li>
+        <li> Usar <strong>tablespaces</strong> separados por entorno (dev, test, prod).</li>
+        <li> Alertas automáticas ante acercamiento al límite duro.</li>
+      </ul>
+      <div class="quote" style="margin-top: 1rem;">
+         "Un diseño consciente del espacio evita disaster recovery innecesarios."
+      </div>
+    </div>
+  </div>
+
+
+</div>
+</body>
+</html>
